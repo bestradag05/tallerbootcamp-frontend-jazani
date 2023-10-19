@@ -1,5 +1,12 @@
+import { Outlet } from 'react-router-dom';
+import Container from 'react-bootstrap/Container';
+
 const Auth = (): JSX.Element => {
-	return <div>Auth</div>;
+	return (
+		<Container>
+			<Outlet />
+		</Container>
+	);
 };
 
 export default Auth;
