@@ -1,14 +1,22 @@
 import { Outlet } from 'react-router-dom';
 import Container from 'react-bootstrap/Container';
-import Menu from './components/Menu';
+import Sidebar from './components/Sidebar';
+import PageHeader from './components/PageHeader';
+import PageFooter from './components/PageFooter';
 
 const Admin = (): JSX.Element => {
 	return (
 		<>
-			<Menu />
-			<Container>
-				<Outlet />
-			</Container>
+			<Sidebar />
+			<div className="main">
+				<PageHeader />
+				<main className="content">
+					<Container fluid>
+						<Outlet />
+					</Container>
+				</main>
+				<PageFooter />
+			</div>
 		</>
 	);
 };

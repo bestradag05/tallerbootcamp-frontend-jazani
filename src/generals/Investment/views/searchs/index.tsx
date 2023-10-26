@@ -5,6 +5,9 @@ import { type InvestmentFilter, type InvestmentResponse } from '../../domain';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { Card } from 'react-bootstrap';
+import Form from 'react-bootstrap/Form';
+import Button from 'react-bootstrap/Button';
+import { useFormik } from 'formik';
 import { type FilterPage, type RequestPagination } from '@/shared/domain';
 import usePaginateSearchInvestment from '../../application/hooks/usePaginateSearchInvestment';
 import { createColumnHelper } from '@tanstack/react-table';
@@ -13,7 +16,31 @@ import TablePaginated from '@/core/components/table/TablePaginated';
 const index = (): JSX.Element => {
 	const [investmentFilter, setInvestmentFilter] = useState<RequestPagination<InvestmentFilter>>({
 		page: 1,
-		perPage: 10,
+		perPage: 5,
+	});
+
+	const formik = useFormik<InvestmentFilter>({
+		initialValues: {
+			amountInvestd: '',
+			description: '',
+			accountantCode: '',
+			year: '',
+		},
+		onSubmit: values => {
+			console.log('values', values);
+
+			setInvestmentFilter(prev => {
+				return {
+					...prev,
+					filter: {
+						amountInvestd: values.amountInvestd,
+						description: values.description,
+						accountantCode: values.accountantCode,
+						year: values.year,
+					},
+				};
+			});
+		},
 	});
 
 	// React Query
@@ -83,6 +110,61 @@ const index = (): JSX.Element => {
 		<>
 			<Row className="pt-2">
 				<Col xs={12}>
+					<Card className="mb-2">
+						<Card.Header>Busqueda</Card.Header>
+						<Card.Body>
+							<Row>
+								<Col xs={12} sm={6} md={4} lg={3}>
+									<Form.Group>
+										<Form.Label>Amount Investd</Form.Label>
+										<Form.Control
+											type="text"
+											name="amountInvestd"
+											value={formik.values.amountInvestd}
+											onChange={formik.handleChange}
+										/>
+									</Form.Group>
+								</Col>
+								<Col xs={12} sm={6} md={4} lg={3}>
+									<Form.Group>
+										<Form.Label>Descripcion</Form.Label>
+										<Form.Control
+											type="text"
+											name="description"
+											value={formik.values.description}
+											onChange={formik.handleChange}
+										/>
+									</Form.Group>
+								</Col>
+								<Col xs={12} sm={6} md={4} lg={3}>
+									<Form.Group>
+										<Form.Label>Accountant Code</Form.Label>
+										<Form.Control
+											type="text"
+											name="accountantCode"
+											value={formik.values.accountantCode}
+											onChange={formik.handleChange}
+										/>
+									</Form.Group>
+								</Col>
+							</Row>
+						</Card.Body>
+						<Card.Footer className="d-flex justify-content-end">
+							<Button
+								type="button"
+								variant="primary"
+								className="me-2"
+								onClick={() => {
+									formik.handleSubmit();
+								}}
+							>
+								Buscar
+							</Button>
+							<Button type="button" variant="secondary" onClick={formik.handleReset}>
+								Limpiar
+							</Button>
+						</Card.Footer>
+					</Card>
 					<Card>
 						<Card.Header>Listado de inversiones</Card.Header>
 						<Card.Body>
