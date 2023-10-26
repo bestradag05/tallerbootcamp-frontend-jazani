@@ -9,8 +9,6 @@ const Admin = (): JSX.Element => {
 			<Container>
 				<Outlet />
 			</Container>
-
-			<div>Admin</div>
 		</>
 	);
 };

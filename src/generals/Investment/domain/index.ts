@@ -1,3 +1,4 @@
 import type InvestmentResponse from './InvestmentResponse';
+import type InvestmentFilter from '@/shared/domain/InvestmentFilter';
 
-export type { InvestmentResponse };
+export type { InvestmentResponse, InvestmentFilter };
