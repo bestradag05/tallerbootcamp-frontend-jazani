@@ -1,3 +1,11 @@
 .content {
 	overflow-y: auto;
 }
+
+.breadcrumb {
+	.breadcrumb-action {
+		&::before {
+			content: '';
+		}
+	}
+}

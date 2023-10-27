@@ -7,13 +7,19 @@ import Col from 'react-bootstrap/Col';
 import { Card } from 'react-bootstrap';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
+import Breadcrumb from 'react-bootstrap/Breadcrumb';
 import { useFormik } from 'formik';
 import { type FilterPage, type RequestPagination } from '@/shared/domain';
 import usePaginateSearchInvestment from '../../application/hooks/usePaginateSearchInvestment';
 import { createColumnHelper } from '@tanstack/react-table';
 import TablePaginated from '@/core/components/table/TablePaginated';
+import { Link } from 'react-router-dom';
+import Swal from 'sweetalert2';
+import useRemoveInvestment from '../../application/hooks/useRemoveInvestment';
 
 const index = (): JSX.Element => {
+	// Attributes
+
 	const [investmentFilter, setInvestmentFilter] = useState<RequestPagination<InvestmentFilter>>({
 		page: 1,
 		perPage: 5,
@@ -46,10 +52,32 @@ const index = (): JSX.Element => {
 	// React Query
 	const { data: investmentPaginated, isFetching } = usePaginateSearchInvestment(investmentFilter);
 
+	const { mutateAsync } = useRemoveInvestment();
 	// React table
 	const columnHelper = createColumnHelper<InvestmentResponse>();
 
 	const columns = [
+		columnHelper.display({
+			id: 'acciones',
+			header: () => <span className="d-block text-center">Acciones</span>,
+			cell: ({ row }) => (
+				<span className="d-flex align-items-center justify-content-center">
+					<Link className="btn btn-primary btn-sm me-2" to={`/investments/edit/${row.original.id}`}>
+						✎{' '}
+					</Link>
+					<Button
+						type="button"
+						variant="danger"
+						className="me-2 btn-sm"
+						onClick={() => {
+							void removeById(row.original);
+						}}
+					>
+						🗑{' '}
+					</Button>
+				</span>
+			),
+		}),
 		columnHelper.accessor('id', {
 			header: 'ID',
 			cell: info => info.getValue(),
@@ -66,16 +94,32 @@ const index = (): JSX.Element => {
 			header: 'DESCRIPTION',
 			cell: info => info.getValue(),
 		}),
-		columnHelper.accessor('accountantCode', {
-			header: 'ACCOUNTANTCODE',
+		columnHelper.accessor('document.name', {
+			header: 'DOCUMENT',
 			cell: info => info.getValue(),
 		}),
-		columnHelper.accessor('currencyTypeId', {
-			header: 'CURRENCYTYPEID',
+		columnHelper.accessor('holder.name', {
+			header: 'HOLDER',
 			cell: info => info.getValue(),
 		}),
-		columnHelper.accessor('declaredTypeId', {
-			header: 'DECLAREDTYPEID',
+		columnHelper.accessor('investmentConcept.name', {
+			header: 'INVESTMENT CONCEPT',
+			cell: info => info.getValue(),
+		}),
+		columnHelper.accessor('investmentType.name', {
+			header: 'INVESTMENT TYPE',
+			cell: info => info.getValue(),
+		}),
+		columnHelper.accessor('measureUnit.name', {
+			header: 'MEASURE UNIT',
+			cell: info => info.getValue(),
+		}),
+		columnHelper.accessor('miningConcession.name', {
+			header: 'MINING CONCESSION',
+			cell: info => info.getValue(),
+		}),
+		columnHelper.accessor('periodType.name', {
+			header: 'PERIOD TYPE',
 			cell: info => info.getValue(),
 		}),
 		columnHelper.accessor('registrationDate', {
@@ -106,9 +150,34 @@ const index = (): JSX.Element => {
 		});
 	};
 
+	const removeById = async (payload: InvestmentResponse): Promise<void> => {
+		const selectedOption = await Swal.fire({
+			title: 'Are you sure?',
+			text: "You won't be able to revert this!",
+			icon: 'warning',
+			showCancelButton: true,
+			confirmButtonColor: '#3085d6',
+			cancelButtonColor: '#d33',
+			confirmButtonText: 'Yes, delete it!',
+		});
+
+		if (selectedOption.isConfirmed) {
+			await mutateAsync(payload.id);
+		}
+	};
+
 	return (
 		<>
-			<Row className="pt-2">
+			<Breadcrumb>
+				<Breadcrumb.Item>General</Breadcrumb.Item>
+				<Breadcrumb.Item active>Investment</Breadcrumb.Item>
+				<li className="breadcrumb-item breadcrumb-action ms-auto">
+					<Link className="btn btn-success" to="/investments/create">
+						Nuevo
+					</Link>
+				</li>
+			</Breadcrumb>
+			<Row>
 				<Col xs={12}>
 					<Card className="mb-2">
 						<Card.Header>Busqueda</Card.Header>
